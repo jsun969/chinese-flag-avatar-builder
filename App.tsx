@@ -18,10 +18,19 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
   },
+  containerWithoutAvatar: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   avatar: {
     height: 250,
     width: 250,
     marginVertical: 16,
+  },
+  saveAndShareButtonView: {
+    marginVertical: 16,
+    flexDirection: 'row',
   },
 });
 
@@ -46,14 +55,32 @@ export default function App() {
       <Appbar.Header>
         <Appbar.Content title="国旗头像生成器" subtitle="上海市第八中学 孙烨阳" />
         <Appbar.Action icon="" />
-        <Appbar.Action icon="" />
+        <Appbar.Action icon="information" />
       </Appbar.Header>
-      <View style={styles.container}>
-        {!!selectedAvatar && <Image source={{ uri: selectedAvatar }} style={styles.avatar} />}
-        <Button icon="camera" mode="contained" onPress={handleSelectAvatar}>
-          添加图片
-        </Button>
-      </View>
+      {!!selectedAvatar ? (
+        <View style={styles.container}>
+          <Image source={{ uri: selectedAvatar }} style={styles.avatar} />
+          <View>
+            <Button icon="camera" mode="contained" onPress={handleSelectAvatar}>
+              更改头像
+            </Button>
+          </View>
+          <View style={styles.saveAndShareButtonView}>
+            <Button mode="contained" icon="content-save" style={{ marginRight: 8 }}>
+              保存
+            </Button>
+            <Button mode="contained" icon="share-variant" style={{ marginLeft: 8 }}>
+              分享
+            </Button>
+          </View>
+        </View>
+      ) : (
+        <View style={styles.containerWithoutAvatar}>
+          <Button icon="camera" mode="contained" onPress={handleSelectAvatar}>
+            添加头像
+          </Button>
+        </View>
+      )}
       <StatusBar style="auto" />
     </PaperProvider>
   );
