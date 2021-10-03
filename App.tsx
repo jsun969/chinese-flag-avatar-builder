@@ -75,7 +75,7 @@ export default function App() {
                 分享
               </Button>
             </View>
-            <FrameSelectButtonGroup />
+            <FrameSelectButtonGroup onSelect={(img) => alert(img)} />
           </View>
         </ScrollView>
       ) : (
