@@ -12,12 +12,12 @@ const styles = StyleSheet.create({
 });
 
 const FrameSelectButtonGroup: React.FC = () => {
-  const [selectedIndex, setSelectedIndex] = useState<number>(0);
+  const [selectedIndex, setSelectedIndex] = useState<any>();
 
   return (
     <View style={styles.ButtonGroupView}>
       {frameImages.map((img, index) => (
-        <FrameSelectButton image={img} selected={selectedIndex === index} onPress={() => setSelectedIndex(index)} key={index} />
+        <FrameSelectButton image={img} onPress={() => setSelectedIndex(img)} key={index} />
       ))}
     </View>
   );
