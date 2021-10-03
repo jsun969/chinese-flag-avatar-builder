@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
 import frameImages from '../assets/frames';
 import FrameSelectButton from './FrameSelectButton';
 

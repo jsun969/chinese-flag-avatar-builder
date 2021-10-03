@@ -1,15 +1,13 @@
 import { StyleSheet, TouchableOpacity, Image } from 'react-native';
 import React from 'react';
 
-const ORIGIN_PADDING = 4;
-const BORDER_WIDTH = 4;
 const styles = StyleSheet.create({
   root: {
     marginBottom: 8,
     marginRight: 8,
     borderRadius: 4,
     borderColor: '#FAF408',
-    padding: ORIGIN_PADDING,
+    padding: 4,
   },
 });
 
