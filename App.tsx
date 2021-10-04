@@ -1,8 +1,11 @@
+import { Asset } from 'expo-asset';
 import * as ImagePicker from 'expo-image-picker';
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { Image, ScrollView, StyleSheet, View } from 'react-native';
+import Canvas, { Image as CanvasImage } from 'react-native-canvas';
 import { Appbar, Button, DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
+import frameImages from './assets/frames';
 import FrameSelectButtonGroup from './components/FrameSelectButtonGroup';
 
 const theme = {
@@ -36,7 +39,8 @@ const styles = StyleSheet.create({
 });
 
 export default function App() {
-  const [selectedAvatar, setSelectedAvatar] = useState<string>('');
+  const [selectedAvatar, setSelectedAvatar] = useState<{ uri: string; base64: string }>({ uri: '', base64: '' });
+  const [frameIndex, setFrameIndex] = useState<number>(-1);
 
   const handleSelectAvatar = async () => {
     let permissionResult = await ImagePicker.requestCameraPermissionsAsync();
@@ -44,11 +48,33 @@ export default function App() {
       alert('需要相册访问权限');
       return;
     }
-    let pickerResult = await ImagePicker.launchImageLibraryAsync();
-    if (pickerResult.cancelled === true) {
+    let pickerResult = await ImagePicker.launchImageLibraryAsync({ base64: true });
+    if (pickerResult.cancelled === true || pickerResult.type === 'video') {
       return;
     }
-    setSelectedAvatar(pickerResult.uri);
+    setSelectedAvatar({ uri: pickerResult.uri, base64: pickerResult.base64! });
+  };
+
+  const handleCanvas = (canvas: Canvas) => {
+    if (!(canvas instanceof Canvas)) {
+      return;
+    }
+
+    canvas.height = 250;
+    canvas.width = 250;
+    const ctx = canvas.getContext('2d');
+    ctx.restore();
+
+    const image = new CanvasImage(canvas);
+    image.src = `data:image/png;base64,${selectedAvatar.base64}`;
+    image.addEventListener('load', () => {
+      ctx.drawImage(image, 0, 0, 250, 250);
+      const frame = new CanvasImage(canvas);
+      frame.src = Asset.fromModule(frameImages[frameIndex]).uri;
+      frame.addEventListener('load', () => {
+        ctx.drawImage(frame, 0, 0, 250, 250);
+      });
+    });
   };
 
   return (
@@ -58,10 +84,14 @@ export default function App() {
         <Appbar.Action icon="" />
         <Appbar.Action icon="information" />
       </Appbar.Header>
-      {!!selectedAvatar ? (
+      {!!selectedAvatar.uri ? (
         <ScrollView>
           <View style={styles.container}>
-            <Image source={{ uri: selectedAvatar }} style={styles.avatar} />
+            {frameIndex === -1 ? (
+              <Image source={{ uri: selectedAvatar.uri }} style={styles.avatar} />
+            ) : (
+              <Canvas ref={handleCanvas} style={styles.avatar} />
+            )}
             <View>
               <Button icon="camera" mode="contained" onPress={handleSelectAvatar}>
                 更改头像
@@ -75,7 +105,7 @@ export default function App() {
                 分享
               </Button>
             </View>
-            <FrameSelectButtonGroup onSelect={(img) => alert(img)} />
+            <FrameSelectButtonGroup onSelect={(img) => setFrameIndex(img)} />
           </View>
         </ScrollView>
       ) : (
