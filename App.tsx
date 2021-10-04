@@ -92,6 +92,11 @@ export default function App() {
     await FileSystem.writeAsStringAsync(filename, avatarResult, {
       encoding: FileSystem.EncodingType.Base64,
     });
+    let permissionResult = await MediaLibrary.requestPermissionsAsync();
+    if (permissionResult.granted === false) {
+      setCameraPermissionError(true);
+      return;
+    }
     await MediaLibrary.saveToLibraryAsync(filename);
     setSaveAvatarSuccess(true);
   };
