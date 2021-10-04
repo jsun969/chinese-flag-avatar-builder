@@ -97,7 +97,7 @@ export default function App() {
   return (
     <PaperProvider theme={theme}>
       <Appbar.Header>
-        <Appbar.Content title="国旗头像生成器" subtitle="上海市第八中学 孙烨阳" />
+        <Appbar.Content title="庆国庆头像生成器" subtitle="上海市第八中学 孙烨阳" />
         <Appbar.Action icon="" />
         <Appbar.Action icon="information" />
       </Appbar.Header>
