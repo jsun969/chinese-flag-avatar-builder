@@ -1,5 +1,7 @@
 import { Asset } from 'expo-asset';
+import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
+import * as MediaLibrary from 'expo-media-library';
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { Image, ScrollView, StyleSheet, View } from 'react-native';
@@ -32,15 +34,12 @@ const styles = StyleSheet.create({
     width: 250,
     marginVertical: 16,
   },
-  saveAndShareButtonView: {
-    marginVertical: 16,
-    flexDirection: 'row',
-  },
 });
 
 export default function App() {
   const [selectedAvatar, setSelectedAvatar] = useState<{ uri: string; base64: string }>({ uri: '', base64: '' });
   const [frameIndex, setFrameIndex] = useState<number>(-1);
+  const [avatarResult, setAvatarResult] = useState<string>('');
 
   const handleSelectAvatar = async () => {
     let permissionResult = await ImagePicker.requestCameraPermissionsAsync();
@@ -66,15 +65,31 @@ export default function App() {
     ctx.restore();
 
     const image = new CanvasImage(canvas);
+    image.crossOrigin = 'anonymous';
     image.src = `data:image/png;base64,${selectedAvatar.base64}`;
-    image.addEventListener('load', () => {
+    image.addEventListener('load', async () => {
       ctx.drawImage(image, 0, 0, 250, 250);
       const frame = new CanvasImage(canvas);
-      frame.src = Asset.fromModule(frameImages[frameIndex]).uri;
-      frame.addEventListener('load', () => {
+      frame.crossOrigin = 'anonymous';
+      const [{ localUri }] = await Asset.loadAsync(frameImages[frameIndex]);
+      const frameBase64 = await FileSystem.readAsStringAsync(localUri!, { encoding: FileSystem.EncodingType.Base64 });
+      frame.src = `data:image/png;base64,${frameBase64}`;
+      frame.addEventListener('load', async () => {
         ctx.drawImage(frame, 0, 0, 250, 250);
+        const canvasResult = await canvas.toDataURL();
+        const imageBase64Result = canvasResult.substring(23, canvasResult.length - 1);
+        setAvatarResult(imageBase64Result);
       });
     });
+  };
+
+  const handleSaveImage = async () => {
+    const filename = `${FileSystem.documentDirectory}oct-1st-avatar.png`;
+    await FileSystem.writeAsStringAsync(filename, avatarResult, {
+      encoding: FileSystem.EncodingType.Base64,
+    });
+    await MediaLibrary.saveToLibraryAsync(filename);
+    alert('保存成功');
   };
 
   return (
@@ -92,19 +107,12 @@ export default function App() {
             ) : (
               <Canvas ref={handleCanvas} style={styles.avatar} />
             )}
-            <View>
-              <Button icon="camera" mode="contained" onPress={handleSelectAvatar}>
-                更改头像
-              </Button>
-            </View>
-            <View style={styles.saveAndShareButtonView}>
-              <Button mode="contained" icon="content-save" style={{ marginRight: 8 }}>
-                保存
-              </Button>
-              <Button mode="contained" icon="share-variant" style={{ marginLeft: 8 }}>
-                分享
-              </Button>
-            </View>
+            <Button icon="camera" mode="contained" onPress={handleSelectAvatar}>
+              更改源头像
+            </Button>
+            <Button mode="contained" icon="content-save" style={{ marginVertical: 16 }} onPress={handleSaveImage}>
+              保存头像
+            </Button>
             <FrameSelectButtonGroup onSelect={(img) => setFrameIndex(img)} />
           </View>
         </ScrollView>
