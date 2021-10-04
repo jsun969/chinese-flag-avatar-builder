@@ -6,7 +6,7 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { Image, ScrollView, StyleSheet, View } from 'react-native';
 import Canvas, { Image as CanvasImage } from 'react-native-canvas';
-import { Appbar, Button, DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
+import { Appbar, Button, DefaultTheme, Provider as PaperProvider, Snackbar } from 'react-native-paper';
 import frameImages from './assets/frames';
 import FrameSelectButtonGroup from './components/FrameSelectButtonGroup';
 
@@ -40,11 +40,13 @@ export default function App() {
   const [selectedAvatar, setSelectedAvatar] = useState<{ uri: string; base64: string }>({ uri: '', base64: '' });
   const [frameIndex, setFrameIndex] = useState<number>(-1);
   const [avatarResult, setAvatarResult] = useState<string>('');
+  const [cameraPermissionError, setCameraPermissionError] = useState<boolean>(false);
+  const [saveAvatarSuccess, setSaveAvatarSuccess] = useState<boolean>(false);
 
   const handleSelectAvatar = async () => {
     let permissionResult = await ImagePicker.requestCameraPermissionsAsync();
     if (permissionResult.granted === false) {
-      alert('需要相册访问权限');
+      setCameraPermissionError(true);
       return;
     }
     let pickerResult = await ImagePicker.launchImageLibraryAsync({ base64: true });
@@ -89,7 +91,7 @@ export default function App() {
       encoding: FileSystem.EncodingType.Base64,
     });
     await MediaLibrary.saveToLibraryAsync(filename);
-    alert('保存成功');
+    setSaveAvatarSuccess(true);
   };
 
   return (
@@ -123,6 +125,20 @@ export default function App() {
           </Button>
         </View>
       )}
+      <Snackbar
+        visible={cameraPermissionError}
+        onDismiss={() => setCameraPermissionError(false)}
+        style={{ backgroundColor: '#d32f2f' }}
+      >
+        需要相册访问权限
+      </Snackbar>
+      <Snackbar
+        visible={saveAvatarSuccess}
+        onDismiss={() => setSaveAvatarSuccess(false)}
+        style={{ backgroundColor: '#2e7d32' }}
+      >
+        保存成功
+      </Snackbar>
       <StatusBar style="auto" />
     </PaperProvider>
   );
