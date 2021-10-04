@@ -9,6 +9,7 @@ import Canvas, { Image as CanvasImage } from 'react-native-canvas';
 import { Appbar, Button, DefaultTheme, Provider as PaperProvider, Snackbar } from 'react-native-paper';
 import frameImages from './assets/frames';
 import FrameSelectButtonGroup from './components/FrameSelectButtonGroup';
+import AboutDialog from './components/AboutDialog';
 
 const theme = {
   ...DefaultTheme,
@@ -42,6 +43,7 @@ export default function App() {
   const [avatarResult, setAvatarResult] = useState<string>('');
   const [cameraPermissionError, setCameraPermissionError] = useState<boolean>(false);
   const [saveAvatarSuccess, setSaveAvatarSuccess] = useState<boolean>(false);
+  const [showAboutDialog, setShowAboutDialog] = useState<boolean>(false);
 
   const handleSelectAvatar = async () => {
     let permissionResult = await ImagePicker.requestCameraPermissionsAsync();
@@ -99,7 +101,7 @@ export default function App() {
       <Appbar.Header>
         <Appbar.Content title="庆国庆头像生成器" subtitle="上海市第八中学 孙烨阳" />
         <Appbar.Action icon="" />
-        <Appbar.Action icon="information" />
+        <Appbar.Action icon="information" onPress={() => setShowAboutDialog(true)} />
       </Appbar.Header>
       {!!selectedAvatar.uri ? (
         <ScrollView>
@@ -139,6 +141,7 @@ export default function App() {
       >
         保存成功
       </Snackbar>
+      <AboutDialog visible={showAboutDialog} onDismiss={() => setShowAboutDialog(false)} />
       <StatusBar style="auto" />
     </PaperProvider>
   );
