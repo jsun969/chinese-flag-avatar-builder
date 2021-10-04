@@ -1,10 +1,11 @@
 {
   "expo": {
-    "name": "chinese-flag-avatar-builder",
+    "name": "庆国庆头像生成器",
     "slug": "chinese-flag-avatar-builder",
-    "version": "1.0.0",
+    "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
+    "githubUrl": "https://github.com/jsun969/chinese-flag-avatar-builder",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -20,6 +21,8 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.jsun969.chineseflagavatarbuilder",
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
