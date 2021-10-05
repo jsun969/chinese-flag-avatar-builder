@@ -4,12 +4,12 @@ import * as ImagePicker from 'expo-image-picker';
 import * as MediaLibrary from 'expo-media-library';
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import { ActivityIndicator, Image, ScrollView, StyleSheet, View, Text } from 'react-native';
+import { Image, ScrollView, StyleSheet, View } from 'react-native';
 import Canvas, { Image as CanvasImage } from 'react-native-canvas';
 import { Appbar, Button, DefaultTheme, Provider as PaperProvider, Snackbar } from 'react-native-paper';
 import frameImages from './assets/frames';
-import FrameSelectButtonGroup from './components/FrameSelectButtonGroup';
 import AboutDialog from './components/AboutDialog';
+import FrameSelectButtonGroup from './components/FrameSelectButtonGroup';
 
 const theme = {
   ...DefaultTheme,
